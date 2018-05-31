@@ -1,0 +1,102 @@
+//
+// Name: Herschel Sweep test
+// Author: Adolfo Carvalho
+// License: Public Domain
+// Version: 1.0
+// Description: This script is intended to simulate a typical Herschel nightly observation. 
+//
+
+
+//function will manage the panning of the Herschel observation
+function showConstellation(cName, aFOV)
+{
+	core.selectObjectByName(cName, true);
+	StelMovementMgr.autoZoomIn(5);
+	core.wait(1);
+	StelMovementMgr.zoomTo(aFOV,3);
+	core.wait(1);
+}
+
+
+//function showConstellation(cName, aFOV)
+//{
+//	core.selectObjectByName(cName, true);
+//	StelMovementMgr.autoZoomIn(5);
+//	core.wait(1);
+//	StelMovementMgr.zoomTo(aFOV,3);
+//	core.wait(1);
+//	ConstellationMgr.setFlagArt(true);
+//	core.wait(5);
+//	ConstellationMgr.setFlagArt(false);
+//}
+
+// hide the GUI
+//core.setGuiVisible(false)
+
+// hide all object labels
+LabelMgr.deleteAllLabels();
+SolarSystem.setFlagLabels(false);
+
+// Set and show the location
+var label = LabelMgr.labelScreen("Bath, UK.", 20, 20, false, 20, color);
+LabelMgr.setLabelShow(label, true);
+core.setObserverLocation("Bath, Britain (UK)", 2);
+core.wait(4);
+LabelMgr.setLabelShow(label, false);
+
+// Set and show the date
+label = LabelMgr.labelScreen("Evening of 20 October 1780", 20, 20, false, 20, color);
+LabelMgr.setLabelShow(label, true);
+core.setDate("1780-10-20T22:00:00", "utc");
+core.wait(3);
+LabelMgr.setLabelShow(label, false);
+
+// Move to the starting observation location
+//core.moveToRaDec(RA, DEC);
+StelMovementMgr.zoomTo(1, 2);
+core.moveToRaDec("03h46m45.16s", "+24d35m44.5s");
+// Let the object we are sitting on drift by
+StelMovementMgr.setFlagTracking(false);
+
+//Oculars.enableOcular(true)
+
+//accelerate the time by +1 of whatever unit
+//core.setDate("+1 day");
+timespan = 2;
+//for (i=0; i<timespan; i++)
+//{
+//	core.setDate("+1 day");
+	core.wait(5)	
+	StelMovementMgr.turnDown(true)
+	StelMovementMgr.moveSlow(true)
+	core.wait(10)
+	StelMovementMgr.turnDown(false)
+	deltaAlt = 3.14159/10.0
+	//StelMovementMgr.moveViewport(0,deltaAlt, duration = 10)	
+//StelMovementMgr.panView(0,deltaAlt);
+	//StelMovementMgt.setAutoMoveDuration(5)
+
+//}
+var constellation = new Array("Taurus", "Orion", "Corvus", "Ursa Major", "Libra", "Scorpius", "Lyra", "Sagittarius", "Cygnus", "Capricornus");
+var aFOV = new Array(40, 50, 20, 60, 25, 32, 20, 50, 40, 40);
+var dblstars = new Array(4, 3, 1, 1, 1, 4, 2, 1, 2, 1);
+
+
+var color="#00AAFF";
+var relscale = StelSkyDrawer.getRelativeStarScale();
+var absscale = StelSkyDrawer.getAbsoluteStarScale();
+
+core.clear("starchart");
+GridLinesMgr.setFlagEquatorGrid(false);
+StelMovementMgr.setFlagTracking(false);
+
+ConstellationMgr.setFlagArt(false);
+ConstellationMgr.setFlagBoundaries(true);
+ConstellationMgr.setFlagLines(true);
+ConstellationMgr.setFlagLabels(true);
+core.wait(3);
+
+core.clear("natural");
+core.setGuiVisible(true);
+core.goHome();
+
