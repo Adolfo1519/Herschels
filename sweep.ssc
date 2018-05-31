@@ -1,0 +1,199 @@
+//
+// Name: Herschel Sweep
+// Author: Adolfo Carvalho
+// License: Public Domain
+// Version: 1.0
+// Description: This script is intended to simulate a typical Herschel nightly observation. 
+
+
+// load in the Oculars plugin (if possible) IF that is not possible, we can redesign this script
+// as part of its own plugin. 
+
+//#include "Oculars.hpp" //"/home/adolfo/Documents/stellarium-0.18.0/plugins/Oculars/Oculars.hpp"
+
+//***************************************************************************************
+
+//function will manage the panning of the Herschel observation
+
+function setUp(location, date, time) //location and date as strings
+{
+// Set and show the location
+var label = LabelMgr.labelScreen(location, 20, 20, false, 20, color);
+LabelMgr.setLabelShow(label, true);
+core.setObserverLocation(location, 2);
+core.wait(4);
+LabelMgr.setLabelShow(label, false);
+
+// Set and show the date
+// combine the strings "Evening of" and the date in the format: "Evening of 20 October 1780"
+label = LabelMgr.labelScreen("Evening of 20 October 1780", 20, 20, false, 20, color);
+LabelMgr.setLabelShow(label, true);
+// combine the strings of date and time with the following format: "1780-10-20T22:00:00"
+core.setDate("1780-10-20T22:00:00" /*want this to be the date-time string*/, "utc");
+core.wait(3);
+LabelMgr.setLabelShow(label, false);	
+
+}
+
+//********************************************************************************************
+
+// hide the GUI
+core.setGuiVisible(false)
+
+// hide all object labels
+LabelMgr.deleteAllLabels();
+SolarSystem.setFlagLabels(false);
+
+//*******************************************************************************************
+
+// This function will manage the panning
+function panningMgr(startLoc, top, bottom, eTime, stepFlag, intervals /*as optional*/) 
+// startLoc should be set up as a vector [string RA,string DEC] 
+// top and bottom should be positions (in DEC space or Altitude values)
+// stepFlag is boolian and intervals should optional (will be used if stepFlag is true)
+// eTime is the ending time of that night's observations
+{
+// move to starting position
+//core.moveToRaDec(RA, DEC);
+StelMovementMgr.zoomTo(0.5, 2);
+core.moveToRaDec(starLoc);
+// Let the object we are sitting on drift by
+StelMovementMgr.setFlagTracking(false);
+
+//If we can get the oculars plugin to work, this is where we want to enable it
+
+//initiate object motion
+StelMovementMgr.turnDown(true) 
+StelMovementMgr.moveSlow(true)
+core.wait(/*duration of motion*/) 
+StelMovementMgr.turnDown(false)
+
+
+//want to query Stellarium for the position we are observing
+// want to query Stellarium for the current time, call it cTime
+while cTime less than eTime //time is a string that tells us the ending observation time
+{
+	while dec greater than bottom
+	{
+	//move down
+	singleSweep("down", stepFlag, intervals)
+	StelMovementMgr.turnDown(false)
+	}
+	
+	//possibly move over to perform next sweep
+	while dec less than top
+	{
+	//move up
+	singleSweep("up", stepFlag, intervals)	
+	StelMovementMgr.turnUp(false)
+	}
+	
+	//query Stellarium for current time, update cTime
+}
+
+}
+
+//***************************************************************************************
+
+// This function will manage the passage of time in our observation
+
+function obsTime(speed)
+{
+defSpeed = 0.000011574  /*standard number of julian days/second*/
+
+core.setTimeRate(speed*defSpeed)
+}  
+
+//***************************************************************************************
+
+//This function will manage the motion through each portion of the sweep
+
+function singleSweep(dir, stepFlag, intervals)
+{
+	if dir == "up"
+	{
+		if stepFlag then begin
+		{
+			for (i=0; i<intervals.length; i++)
+			{
+			/*StelMovementMgr.turnUp(true)
+			StelMovementMgr.moveSlow(true)	
+			core.wait(intervals(i))
+			StelMovementMgr.turnUp(false)*/
+			//step size in motion can be calculated from the length of or number
+			// of intervals we want in the motion
+			core.moveToRaDec(/*next step*/) 
+			core.wait(intervals(i))	
+			//have not decided if intervals will be stop time or motion time.
+			}
+		}
+		else
+		{
+		StelMovementMgr.turnUp(true)
+		}
+
+	}
+	if dir == "down"
+	{
+		if stepFlag then begin
+		{
+			for (i=0; i<intervals.length; i++)
+			{
+			StelMovementMgr.turnDown(true)
+			StelMovementMgr.moveSlow(true)	
+			//if you could find a way to actually control the speed of the sweeping motion, that would be great. I have been trying for a few days to find the function that controls that (the closest I can find is the Public member StelMovementMgr.setMovementSpeed or StelMovementMgr.updateMotion). The issue is actually calling them in this script. Once we can control the speed, I will be able to implement some of the math we want to worry about. 
+			core.wait(intervals(i))
+			StelMovementMgr.turnDown(false)	
+			//have not decided if intervals will be stop time or motion time.
+			}
+		}
+		else
+		{
+		StelMovementMgr.turnDown(true)
+		}
+
+	}
+}
+
+//******************************************************************************************
+
+//accelerate the time by +1 of whatever unit
+//core.setDate("+1 day");
+
+//for (i=0; i<timespan; i++)
+//{
+//	core.setDate("+1 day");
+	core.wait(5)	
+
+// Accelerate the passage of time
+// core.setTimeRate(Jdays/sec)
+
+	//core.selectObjectByName("HIP 18730", false);
+	//Oculars.enableOcular(true)
+
+/*
+var constellation = new Array("Taurus", "Orion", "Corvus", "Ursa Major", "Libra", "Scorpius", "Lyra", "Sagittarius", "Cygnus", "Capricornus");
+var aFOV = new Array(40, 50, 20, 60, 25, 32, 20, 50, 40, 40);
+var dblstars = new Array(4, 3, 1, 1, 1, 4, 2, 1, 2, 1);
+*/
+
+//I will leave these here in case we choose mute particular display options like grid lines, etc.
+var color="#00AAFF";
+var relscale = StelSkyDrawer.getRelativeStarScale();
+var absscale = StelSkyDrawer.getAbsoluteStarScale();
+
+core.clear("starchart");
+GridLinesMgr.setFlagEquatorGrid(false);
+
+ConstellationMgr.setFlagArt(false);
+ConstellationMgr.setFlagBoundaries(true);
+ConstellationMgr.setFlagLines(true);
+ConstellationMgr.setFlagLabels(true);
+core.wait(3);
+
+//This will return everything to where it was at first
+core.clear("natural");
+core.setGuiVisible(true);
+core.goHome();
+
+
