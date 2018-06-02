@@ -1,0 +1,21 @@
+Installing a Dynamic plugin in Stellarium
+
+download the stellarium source into /home/me/builds/stellarium
+
+cd /home/me/builds
+svn co https://stellarium.svn.sourceforge.net/svnroot/stellarium/trunk/extmodules
+
+build the main stellarium program following instructions
+set the environment variable STELROOT 
+
+export STELROOT=/home/me/builds/stellarium
+
+change directory into the plugin you want and create a build directory
+
+cd /home/me/builds/plugins/my_plugin
+mkdir -p builds/unix
+cd builds/unix
+
+cmake ../..
+make
+make install 
