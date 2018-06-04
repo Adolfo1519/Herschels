@@ -181,6 +181,7 @@ void PointToDialog::createDialogContent()
 	sweepMapper->addMapping(ui->sweepEndRA,                 2);
 	sweepMapper->addMapping(ui->sweepStartDec,              3);
 	sweepMapper->addMapping(ui->sweepEndDec,         	4);
+	sweepMapper->addMapping(ui->sweepDate,			5);
 
 	sweepMapper->toFirst();
 	connect(ui->sweepListView->selectionModel() , SIGNAL(currentRowChanged(QModelIndex, QModelIndex)),
