@@ -33,18 +33,15 @@
 namespace SweepTools 
 {
 	
-	/*Qstring findCenter(const Qstring startRA, 
-			   const Qstring endRA, 
-			   const Qstring startDec, 
-			   const Qstring endDec) const*/
-	QString findMidDec(const QString startRA,
-                   	const QString endRA) const
+
+	QString findMidRA(const QString startRA,
+                   	   const QString endRA);
 
 	QString findMidDec(const QString startDec,
-                   	const QString endDec) const
+                   	   const QString endDec);
 
 	QDateTime calcTime(const QString startRA, 
-			   const QDateTime& dateTime) const
+			   const QDateTime& dateTime);
 
 	
 };

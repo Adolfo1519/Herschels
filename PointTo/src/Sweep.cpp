@@ -182,6 +182,7 @@ QString startRA = "07h24m0.00s";
     QString endDec = "21d52m00.0s";
    
 QString date = "1787-01-24T22:00:30.0";
+"yyyy'-'MM'-'dd'T'hh:mm:ss.z"
   */  
 
 Sweep * Sweep::sweepModel(void)

@@ -8,10 +8,12 @@
 #include <QObject>
 /*#include "CCD.hpp"
 #include "Ocular.hpp"
+*/
 #include "PropertyBasedTableModel.hpp"
 #include "StelDialog.hpp"
 #include "StelStyle.hpp"
-#include "Telescope.hpp"
+#include "Sweep.hpp"
+/*#include "Telescope.hpp"
 #include "Lens.hpp"
 */
 
@@ -34,7 +36,7 @@ class PointToDialog : public StelDialog
 	Q_OBJECT
 
 public:
-	PointToDialog(PointTo* plugin, QList<Sweeps *>* sweeps);
+	PointToDialog(PointTo* plugin, QList<Sweep *>* sweeps);
 	virtual ~PointToDialog();
 
 public slots:

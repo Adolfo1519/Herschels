@@ -48,7 +48,7 @@ public:
 	QString endDec(void) const;
 	void setEndDec(const QString & endDec);
 	QString date(void) const;
-	void setDate(const QString & dateStr)
+	void setDate(const QString & dateStr);
 
 /*
 	double appearentFOV(void) const;

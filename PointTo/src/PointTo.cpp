@@ -464,10 +464,22 @@ void PointTo::run(bool wantRun)
 			StelSkyDrawer *skyDrawer = core ->getSkyDrawer();
 			StelMovementMgr *movementManager = core->getMovementMgr();
 		}
-		runSweep(core)
+		runSweep(core);
+	}	
+	else
+	{
+		goHome();
 	}
 }
 
+void PointTo::goHome();
+{
+	StelCore *core = StelApp::getInstance().getCore();
+	StelMovementMgr *movementManager = core->getMovementMgr();
+	StelSkyDrawer *skyDrawer = core->getSkyDrawer();
+
+	core.goHome();
+}
 
 //void Oculars::setFlagRequireSelection(bool state)
 //{
@@ -1126,45 +1138,6 @@ void PointTo::setArrowButtonScale(const double val)
 double PointTo::getArrowButtonScale() const
 {
 	return arrowButtonScale;
-}
-
-void PointTo::setFlagHideGridsLines(const bool b)
-{
-	if (b != flagHideGridsLines)
-	{
-		flagHideGridsLines = b;
-		settings->setValue("hide_grids_and_lines", b);
-		settings->sync();
-		emit flagHideGridsLinesChanged(b);
-
-		if (b && flagShowOculars)
-		{
-			// Store current state for later resetting
-			flagGridLinesDisplayedMain = GETSTELMODULE(GridLinesMgr)->getFlagGridlines();
-			flagCardinalPointsMain     = GETSTELMODULE(LandscapeMgr)->getFlagCardinalsPoints();
-			flagConstellationLinesMain = GETSTELMODULE(ConstellationMgr)->getFlagLines();
-			flagAsterismLinesMain      = GETSTELMODULE(AsterismMgr)->getFlagLines();
-			flagRayHelpersLinesMain  = GETSTELMODULE(AsterismMgr)->getFlagRayHelpers();
-			GETSTELMODULE(GridLinesMgr)->setFlagGridlines(false);
-			GETSTELMODULE(LandscapeMgr)->setFlagCardinalsPoints(false);
-			GETSTELMODULE(ConstellationMgr)->setFlagLines(false);
-			GETSTELMODULE(AsterismMgr)->setFlagLines(false);
-		}
-		else if (!b && flagShowOculars)
-		{
-			// Restore main program state
-			GETSTELMODULE(GridLinesMgr)->setFlagGridlines(flagGridLinesDisplayedMain);
-			GETSTELMODULE(LandscapeMgr)->setFlagCardinalsPoints(flagCardinalPointsMain);
-			GETSTELMODULE(ConstellationMgr)->setFlagLines(flagConstellationLinesMain);
-			GETSTELMODULE(AsterismMgr)->setFlagLines(flagAsterismLinesMain);
-			GETSTELMODULE(AsterismMgr)->setFlagRayHelpers(flagRayHelpersLinesMain);
-		}
-	}
-}
-
-bool PointTo::getFlagHideGridsLines() const
-{
-	return flagHideGridsLines;
 }
 
 QString PointTo::getDimensionsString(double fovX, double fovY) const

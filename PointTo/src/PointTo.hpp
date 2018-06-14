@@ -12,7 +12,7 @@
 */
 #include "StelModule.hpp"
 #include "StelTexture.hpp"
-#include "Telescope.hpp"
+
 #include "VecMath.hpp"
 #include "StelUtils.hpp"
 #include "SweepTools.hpp"
@@ -46,13 +46,10 @@ class PointTo : public StelModule
 {
 	Q_OBJECT
 
-	Q_PROPERTY(bool enableOcular     READ getEnableOcular     WRITE enableOcular     NOTIFY enableOcularChanged)
+	Q_PROPERTY(bool enableSweep     READ getEnableSweep     WRITE enableSweep     NOTIFY enableSweepChanged)
 	
 	Q_PROPERTY(int selectedSweepIndex       READ getSelectedSweepIndex       WRITE selectSweepAtIndex       NOTIFY selectedSweepChanged)
 	
-	Q_PROPERTY(bool flagInitFOVUsage             READ getFlagInitFovUsage             WRITE setFlagInitFovUsage NOTIFY flagInitFOVUsageChanged) 
-	Q_PROPERTY(bool flagInitDirectionUsage       READ getFlagInitDirectionUsage       WRITE setFlagInitDirectionUsage NOTIFY flagInitDirectionUsageChanged) 
-	Q_PROPERTY(bool flagHideGridsLines     READ getFlagHideGridsLines      WRITE setFlagHideGridsLines      NOTIFY flagHideGridsLinesChanged)
 	Q_PROPERTY(bool flagSemiTransparency   READ getFlagUseSemiTransparency WRITE setFlagUseSemiTransparency NOTIFY flagUseSemiTransparencyChanged) 
 	Q_PROPERTY(bool flagDMSDegrees         READ getFlagDMSDegrees          WRITE setFlagDMSDegrees          NOTIFY flagDMSDegreesChanged)
 	
@@ -94,14 +91,17 @@ public slots:
 	void SweepReset();
 	void decrementSweepIndex();
 	void displayPopupMenu();
+	
+	void enableSweep(bool enableSweepMode);
+	bool getEnableSweep() const { return flagShowSweep; }
+	
+
 	//! This method is called with we detect that our hot key is pressed.  It handles
 	//! determining if we should do anything - based on a selected object.
 	void incrementSweepIndex();
 	
 	void selectSweepAtIndex(int index);           //!< index in the range of -1:ccds.count(), else call is ignored
 	int getSelectedSweepIndex() const {return selectedSweepIndex; }
-	void enableSweep(bool enableSweepMode)
-	bool getEnableSweep() const { return flagShowSweep; }
 	
 	void setFlagDMSDegrees(const bool b);
 	bool getFlagDMSDegrees(void) const;
@@ -116,7 +116,10 @@ signals:
 	
 	void arrowButtonScaleChanged(double value);
 	void flagDMSDegreesChanged(bool value);
-	
+
+	void setFlagUseSemiTransparency(const bool value);
+	void getUseSemiTransparency(const bool value);
+	void flagUseSemiTransparencyChanged(bool value);
 private slots:
 	//! Signifies a change in ocular or telescope.  Sets new zoom level.
 	//I'm sure this part is important but I don't know why
@@ -172,11 +175,14 @@ private:
 	bool flagCardinalPointsMain;	//!< Flag to track if CardinalPoints was displayed at activation.
 	bool flagAdaptationMain;	//!< Flag to track if adaptationCheckbox was enabled at activation.
 
-	
+	bool flagSemiTransparency;
 	bool flagDMSDegrees;             //!< Use decimal degrees in CCD frame display
 	
 	PointToDialog *pointtoDialog;
+
 	bool ready; //!< A flag that determines that this module is usable.  If false, we won't open.
+
+	QSignalMapper * sweepsSignalMapper;    
 
 	StelAction * actionShowSweep;
 	StelAction * actionConfiguration;
@@ -184,7 +190,7 @@ private:
 	StelAction * actionSweepIncrement;
 	StelAction * actionSweepDecrement;
 
-};
+}
 
 
 
@@ -203,4 +209,4 @@ public:
 	virtual QObjectList getExtensionList() const { return QObjectList(); }
 };
 
-#endif /*_POINTTO_HPP_*/
+#endif //_POINTTO_HPP_
