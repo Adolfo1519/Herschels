@@ -1,8 +1,12 @@
 # Herschels
-A repository for the Herschels project code
+This repository is dedicated to working on the Herschels in a Box project. The goal of the project
+is to create a Stellarium plugin which can run the various exploratory sweeps the Herschels did 
+(starting with Caroline and William, though we might add John). 
 
-I have included a script with some edits of my own to demonstrated how Stellarium can be manipulated. Scripts can be run in 
-Stellarium as .ssc files included in the "scripts" folder in your Stellarium directory. 
-There are also a couple of plugins which can be added to the Stellarium "plug-ins" folder if you do not already have them. 
-They are interactive, so looking at their code will illustrate how we can make GUIs and such in Stellarium. 
+The current plugin being worked on is called "PointTo". It is modeled after the Stellarium Oculars 
+plugin and the idea is to take in the sweep data from some .ini file and just point to the center 
+of the box being traced out by the sweep. 
+
+The functionality is relatively basic, but it exists to learn how to make Stellarium read in data
+and perform simple movement functions. 
 
