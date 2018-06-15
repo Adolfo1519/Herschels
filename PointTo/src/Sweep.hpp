@@ -22,12 +22,12 @@ class Sweep : public QObject
 //not matter to what we are doing. I need to figure out what to
 //remove and what to keep.
 	
-	Q_PROPERTY(QString sweepName READ SweepName WRITE setSweepName)
-	Q_PROPERTY(QString startRA READ StartRA WRITE setStartRA)
-	Q_PROPERTY(QString endRA READ EndRA WRITE setEndRA)
-	Q_PROPERTY(QString startDec READ StartDec WRITE setStartDec)
-	Q_PROPERTY(QString endDec READ EndDec WRITE setEndDec)
-	Q_PROPERTY(QString date READ Date WRITE setDate)
+    Q_PROPERTY(QString sweepName READ sweepName WRITE setSweepName)
+    Q_PROPERTY(QString startRA READ startRA WRITE setStartRA)
+    Q_PROPERTY(QString endRA READ endRA WRITE setEndRA)
+    Q_PROPERTY(QString startDec READ startDec WRITE setStartDec)
+    Q_PROPERTY(QString endDec READ endDec WRITE setEndDec)
+    Q_PROPERTY(QString date READ date WRITE setDate)
 	//Q_PROPERTY(QString reticlePath READ reticlePath WRITE setReticlePath)
 public:
 	Sweep();
@@ -38,7 +38,7 @@ public:
 	static Sweep * sweepModel(void);
 
 	QString sweepName(void) const;
-	void setSweepName(const QString & SweepName);
+    void setSweepName(const QString & sweepName);
 	QString startRA(void) const;
 	void setStartRA(const QString & startRA);
 	QString endRA(void) const;

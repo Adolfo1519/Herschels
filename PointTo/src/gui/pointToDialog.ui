@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ocularDialogForm</class>
- <widget class="QWidget" name="ocularDialogForm">
+ <class>pointToDialogForm</class>
+ <widget class="QWidget" name="pointToDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -393,19 +393,19 @@
                  <widget class="QLineEdit" name="sweepName"/>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="lineEdit"/>
+                 <widget class="QLineEdit" name="sweepStartRA"/>
                 </item>
                 <item row="2" column="1">
-                 <widget class="QLineEdit" name="lineEdit_2"/>
+                 <widget class="QLineEdit" name="sweepEndRA"/>
                 </item>
                 <item row="3" column="1">
-                 <widget class="QLineEdit" name="lineEdit_3"/>
+                 <widget class="QLineEdit" name="sweepStartDec"/>
                 </item>
                 <item row="4" column="1">
-                 <widget class="QLineEdit" name="lineEdit_4"/>
+                 <widget class="QLineEdit" name="sweepEndDec"/>
                 </item>
                 <item row="5" column="1">
-                 <widget class="QLineEdit" name="lineEdit_5"/>
+                 <widget class="QLineEdit" name="sweepDate"/>
                 </item>
                </layout>
               </widget>
@@ -458,8 +458,6 @@
   <tabstop>pushButtonMoveSweepDown</tabstop>
   <tabstop>deleteSweep</tabstop>
  </tabstops>
- <resources>
-  <include location="../../../../data/gui/guiRes.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

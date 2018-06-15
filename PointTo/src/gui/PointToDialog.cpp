@@ -6,7 +6,7 @@
 //load in the dialog header and .ui file
 #include "PointToDialog.hpp"
 #include "ui_pointToDialog.h"
-
+#include "PointTo.hpp"
 #include "StelApp.hpp"
 #include "StelGui.hpp"
 #include "StelFileMgr.hpp"
@@ -23,15 +23,16 @@
 #include <QSettings>
 #include <QStandardItemModel>
 #include <limits>
+#include <QRegExpValidator>
 
 PointToDialog::PointToDialog(PointTo* pluginPtr,
-			   QList<Sweeps *>* sweeps)
+               QList<Sweep *>* sweeps)
 	: StelDialog("PointTo")
 	, plugin(pluginPtr)
 	, sweepMapper(Q_NULLPTR)
 
 {
-	ui = new Ui_pointToDialogForm;
+    ui = new Ui_pointToDialogForm();
 	this->sweeps = sweeps;
 	sweepTableModel = new PropertyBasedTableModel(this);
 	Sweep* sweepModel = Sweep::sweepModel();
@@ -40,7 +41,7 @@ PointToDialog::PointToDialog(PointTo* pluginPtr,
 			    sweepModel->propertyMap());
 	
 	QRegExp nameExp("^\\S.*");
-	validatorName = new QRegExpValidator(nameExp, this);
+    validatorName = new QRegExpValidator(nameExp, this);
 }
 
 PointToDialog::~PointToDialog()
@@ -166,7 +167,7 @@ void PointToDialog::createDialogContent()
 
 	connect(ui->pushButtonMoveSweepUp,      SIGNAL(pressed()), this, SLOT(moveUpSelectedSweep()));
 	connect(ui->pushButtonMoveSweepDown,    SIGNAL(pressed()), this, SLOT(moveDownSelectedSweep()));
-	connect(ui->pushButtonMoveSensorUp,      SIGNAL(pressed()), 
+//    connect(ui->pushButtonMoveSweepUp,      SIGNAL(pressed()),
 
 //Each entry in our menu of sweeps is added through this mapper. The
 //mapper will associate each part (like sweepName or sweepStartRA) 
@@ -174,7 +175,7 @@ void PointToDialog::createDialogContent()
 //manipulate the parameters of the sweeps. 
 	// The sweep mapper
 	sweepMapper = new QDataWidgetMapper();
-	sweepMapper->setModel(ocularTableModel);
+    sweepMapper->setModel(sweepTableModel);
 	sweepMapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
 	sweepMapper->addMapping(ui->sweepName,                  0);
 	sweepMapper->addMapping(ui->sweepStartRA,               1);
@@ -186,7 +187,7 @@ void PointToDialog::createDialogContent()
 	sweepMapper->toFirst();
 	connect(ui->sweepListView->selectionModel() , SIGNAL(currentRowChanged(QModelIndex, QModelIndex)),
 		sweepMapper, SLOT(setCurrentModelIndex(QModelIndex)));
-	ui->ocularListView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->sweepListView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->sweepListView->setCurrentIndex(sweepTableModel->index(0, 1));
 
 //**************************************************************

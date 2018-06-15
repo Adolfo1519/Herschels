@@ -2,7 +2,7 @@
  The actual SweepTools file that defines the namespace
  */
 
-#include "Ocular.hpp"
+#include "Sweep.hpp"
 #include "StelMovementMgr.hpp"
 #include "StelUtils.hpp"
 #include <QString>
@@ -42,9 +42,6 @@ QString findMidRA(const QString startRA,
     double endRAd = StelUtils::getDecAngle(endRA);
 
     double midpointRAd = startRAd + ((endRAd - startRAd)/2.0);
-    cout << "endRAd = " << endRAd << endl;
-    cout << "startRAd = " << startRAd << endl;
-    cout << "midpointRAd = " << midpointRAd << endl;
     QString midpointRA = StelUtils::radToHmsStr(midpointRAd, true);
 
     return midpointRA;
@@ -57,9 +54,6 @@ QString findMidDec(const QString startDec,
     double endDecd = StelUtils::getDecAngle(endDec);
 
     double midpointDecd = startDecd + ((endDecd - startDecd)/2.0);
-    cout << "endDecd = " << endDecd << endl;
-    cout << "startDecd = " << startDecd << endl;
-    cout << "midpointDecd = " << midpointDecd << endl;
 
     QString midpointDec = StelUtils::radToDmsStr(midpointDecd, true, true);
 

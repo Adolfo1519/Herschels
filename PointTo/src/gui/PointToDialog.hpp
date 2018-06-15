@@ -53,7 +53,7 @@ public slots:
 protected:
 	//! Initialize the dialog widgets and connect the signals/slots
 	virtual void createDialogContent();
-	Ui_pointToDialogForm* ui;
+    Ui_pointToDialogForm* ui;
 
 private slots:
 	void initAboutText();
@@ -65,6 +65,7 @@ private:
 	QDataWidgetMapper*		sweepMapper;
 	QList<Sweep *>*			sweeps;
 	PropertyBasedTableModel*	sweepTableModel;
+    QRegExpValidator*		validatorName;
 };
 
 #endif // _POINTTODIALOG_HPP_

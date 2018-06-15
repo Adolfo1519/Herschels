@@ -2,7 +2,7 @@
  The actual Sweep function that will take in data and point to somewhere
  */
 
-#include "Ocular.hpp"
+#include "Sweep.hpp"
 #include "StelMovementMgr.hpp"
 #include "StelUtils.hpp"
 /*
@@ -25,7 +25,7 @@ Sweep::Sweep(const QObject& other)
 	  m_startDec(other.property("startDec").toString()),
 	  m_endDec(other.property("endDec").toString()),
 	  m_date(other.property("date").toString()),
-	  m_name(other.property("name").toString()),
+      m_name(other.property("name").toString())
 	  //m_reticlePath(other.property("reticlePath").toString())
 {
 }
@@ -83,7 +83,7 @@ QString Sweep::sweepName(void) const
 	return m_name;
 }
 
-void Sweep::setSweepName(const QString aName)
+void Sweep::setSweepName(const QString & aName)
 {
 	m_name = aName;
 }
@@ -93,7 +93,7 @@ QString Sweep::startRA(void) const
 	return m_startRA;
 }
 
-void Sweep::setStartRA(const QString sRA)
+void Sweep::setStartRA(const QString & sRA)
 {
 	m_startRA = sRA;
 }
@@ -103,7 +103,7 @@ QString Sweep::endRA(void) const
 	return m_endRA;
 }
 
-void Sweep::setEndRA(const QString eRA)
+void Sweep::setEndRA(const QString & eRA)
 {
 	m_endRA = eRA;
 }
@@ -113,7 +113,7 @@ QString Sweep::startDec(void) const
 	return m_startDec;
 }
 
-void Sweep::setStartDec(const QString sDec)
+void Sweep::setStartDec(const QString & sDec)
 {
 	m_startDec = sDec;
 }
@@ -123,7 +123,7 @@ QString Sweep::endDec(void) const
 	return m_endDec;
 }
 
-void Sweep::setEndDec(const QString eDec)
+void Sweep::setEndDec(const QString & eDec)
 {
 	m_endDec = eDec;
 }
@@ -133,7 +133,7 @@ QString Sweep::date(void) const
 	return m_date;
 }
 
-void Sweep::setDate(const QString dt)
+void Sweep::setDate(const QString & dt)
 {
 	m_date = dt;
 }
