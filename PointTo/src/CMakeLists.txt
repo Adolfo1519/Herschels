@@ -45,12 +45,14 @@ SET(PointTo_UIS
 
 SET(PointTo_RES_SXX
     # Resources
+    ../resources/PointTo.qrc
 )
 
 # Wrapping UI
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 QT5_WRAP_UI(PointTo_UIS_H ${PointTo_UIS})
+QT5_ADD_RESOURCES(PointTo_RES_SXX ${PointTo_RES})
 
 # Library properties
 ADD_LIBRARY(PointTo-static MODULE ${PointTo_SRCS} ${PointTo_RES_SXX} ${PointTo_UIS_H})

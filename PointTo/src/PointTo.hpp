@@ -178,6 +178,9 @@ private:
     QSignalMapper * sweepsSignalMapper;
 
     PointToDialog *pointtoDialog;
+
+    StelButton* toolbarButton;
+
     bool ready; //!< A flag that determines that this module is usable.  If false, we won't open.
 
     StelAction * actionShowSweep;

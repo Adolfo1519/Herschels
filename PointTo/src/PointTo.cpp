@@ -394,6 +394,34 @@ void PointTo::init()
 
     connect(&StelApp::getInstance(), SIGNAL(languageChanged()), this, SLOT(retranslateGui()));
     connect(this, SIGNAL(selectedSweepChanged(int)), this, SLOT(updateSweep()));
+    StelApp& app = StelApp::getInstance();
+
+
+    // Add a toolbar button
+    try
+    {
+        StelGui* gui = dynamic_cast<StelGui*>(app.getGui());
+        if (gui!=Q_NULLPTR)
+        {
+            // Create action for enable/disable & hook up signals
+            addAction("actionShow_Point_To", N_("Point To"), N_("Point to"), "enabled", "Ctrl+L");
+
+            connect(this, SIGNAL(toggled(bool)),
+                    pointtoDialog, SLOT(setVisible(bool)));
+
+            toolbarButton = new StelButton(Q_NULLPTR,
+                               QPixmap(":/sweep/bt_telrad_on.png"),
+                               QPixmap(":/sweep/bt_telrad_off.png"),
+                               QPixmap(":/sweep/bt_ocular_off.png"),
+                               "actionShow_Point_To");
+            gui->getButtonBar()->addButton(toolbarButton, "065-pluginsGroup");
+
+        }
+    }
+    catch (std::runtime_error& e)
+    {
+        qWarning() << "WARNING: unable create toolbar button for AngleMeasure plugin: " << e.what();
+    }
 }
 
 /* ****************************************************************************************************************** */

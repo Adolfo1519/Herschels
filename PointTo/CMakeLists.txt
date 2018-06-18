@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
 set (CMAKE_CXX_STANDARD 11)
 PROJECT(PointTo)
 
-SET(DYNAMICPLUGINTEMPLATE_VERSION "0.1.0")
+SET(POINTTO_VERSION "0.1.0")
 
 FIND_PACKAGE(Qt5Core REQUIRED)
 FIND_PACKAGE(Qt5Gui REQUIRED)
@@ -41,4 +41,5 @@ SET(QT_LINK_PARAMETERS Qt5::Core Qt5::Gui Qt5::OpenGL Qt5::Widgets)
 SET(CMAKE_INSTALL_PREFIX $ENV{HOME}/.stellarium)
 
 # TODO: Remove this hardcoded path
-install(FILES builds/unix/src/libPointTo.so DESTINATION modules/PointTo/)
+#install(FILES builds/unix/src/libPointTo.so DESTINATION modules/PointTo/)
+install(FILES DESTINATION modules/PointTo/)
