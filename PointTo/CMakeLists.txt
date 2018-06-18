@@ -5,11 +5,14 @@ set (CMAKE_CXX_STANDARD 11)
 PROJECT(PointTo)
 
 SET(POINTTO_VERSION "0.1.0")
-
+SET(PACKAGE PointTo)
 FIND_PACKAGE(Qt5Core REQUIRED)
 FIND_PACKAGE(Qt5Gui REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Widgets)
+
+SET(BUILD_STATIC_LIB 0 CACHE BOOL "Build the static version of the library.")
+SET(BUILD_DYNAMIC_LIB 1 CACHE BOOL "Build the dynamic (plugin) version of the library.")
 
 SET(STELLARIUM_SOURCE_DIR $ENV{STELROOT})
 

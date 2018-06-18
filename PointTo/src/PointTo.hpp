@@ -176,6 +176,7 @@ private:
     bool flagShowSweep;		//!< flag used to track if we are in sweep mode.
     
     QSignalMapper * sweepsSignalMapper;
+    QSettings* conf;
 
     PointToDialog *pointtoDialog;
 

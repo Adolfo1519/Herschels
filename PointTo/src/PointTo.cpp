@@ -114,6 +114,7 @@ PointTo::PointTo():
     sweepsSignalMapper = new QSignalMapper(this);
 
     setObjectName("PointTo");
+    conf = StelApp::getInstance().getSettings();
 
 #ifdef Q_OS_MAC
     qt_set_sequence_auto_mnemonic(true);
@@ -340,7 +341,9 @@ void PointTo::handleKeys(QKeyEvent* event)
 void PointTo::init()
 {
     qDebug() << "PointTo plugin - Press ALT-s for configuration.";
+    conf->setValue("AngleMeasure/enable_at_startup", true);
 
+    enableSweep(conf->value("PointTo/enable_at_startup", true).toBool());
     // Load settings from sweeps.ini
     try {
         validateAndLoadIniFile();
