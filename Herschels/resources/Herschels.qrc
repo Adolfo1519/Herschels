@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/sweep">
+        <file>default_sweep.ini</file>
+        <file>bt_telrad_on.png</file>
+        <file>bt_telrad_off.png</file>
+        <file>bt_ocular_off.png</file>
+        <file>Sweep65.png</file>
+    </qresource>
+</RCC>

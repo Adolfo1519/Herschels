@@ -1,0 +1,15 @@
+-I/Users/herschel/Herschels/src/.
+-I/Users/herschel/Herschels/src/gui
+-I/Users/herschel/Herschels/builds/macosx/plugins/Herchels/src
+-I/Users/herschel/Herschels/plugins/Oculars/src
+-I/Users/herschel/Herschels/plugins/Oculars/src/gui
+-I/Users/herschel/Herschels/src
+-I/Users/herschel/Herschels/src/gui
+-I/Users/herschel/Herschels/builds/macosx
+-I/Users/herschel/Herschels/src
+-I/Users/herschel/Herschels/src/gui
+-I/Users/herschel/Herschels/builds/macosx/src
+-I/Users/herschel/Herschels/builds/macosx/src
+-o
+/Users/herschel/Herschels/builds/macosx/src/moc_Herschels.cpp
+/Users/herschel/Herschels/src/Herschels.hpp
