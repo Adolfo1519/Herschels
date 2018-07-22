@@ -99,6 +99,7 @@ class Oculars : public StelModule
 	Q_PROPERTY(bool flagSemiTransparency   READ getFlagUseSemiTransparency WRITE setFlagUseSemiTransparency NOTIFY flagUseSemiTransparencyChanged) 
 	Q_PROPERTY(bool flagDMSDegrees         READ getFlagDMSDegrees          WRITE setFlagDMSDegrees          NOTIFY flagDMSDegreesChanged)
 	Q_PROPERTY(bool flagAutosetMountForCCD READ getFlagAutosetMountForCCD  WRITE setFlagAutosetMountForCCD  NOTIFY flagAutosetMountForCCDChanged)
+	Q_PROPERTY(bool flagScalingFOVForTelrad	READ getFlagScalingFOVForTelrad  WRITE setFlagScalingFOVForTelrad  NOTIFY flagScalingFOVForTelradChanged)
 
 	Q_PROPERTY(double arrowButtonScale     READ getArrowButtonScale        WRITE setArrowButtonScale        NOTIFY arrowButtonScaleChanged)
 
@@ -200,6 +201,9 @@ public slots:
 	void setFlagAutosetMountForCCD(const bool b);
 	bool getFlagAutosetMountForCCD(void) const;
 
+	void setFlagScalingFOVForTelrad(const bool b);
+	bool getFlagScalingFOVForTelrad(void) const;
+
 	void setFlagUseSemiTransparency(const bool b);
 	bool getFlagUseSemiTransparency(void) const;
 
@@ -229,6 +233,7 @@ signals:
 	void flagGuiPanelEnabledChanged(bool value);
 	void flagHideGridsLinesChanged(bool value);
 	void flagAutosetMountForCCDChanged(bool value);
+	void flagScalingFOVForTelradChanged(bool value);
 	void flagUseSemiTransparencyChanged(bool value);
 	void flagShowResolutionCriterionsChanged(bool value);
 	void arrowButtonScaleChanged(double value);
@@ -277,6 +282,8 @@ private:
 	//! It does not try to copy values over.
 	//! Once there is a valid ini file, it is loaded into the settings attribute.
 	void validateAndLoadIniFile();
+
+	void toggleLines(bool visible);
 
 	//! toggles the actual ocular view.
 	//! Record the state of the GridLinesMgr and other settings beforehand, so that they can be reset afterwards.
@@ -348,6 +355,7 @@ private:
 	bool flagHideGridsLines;         //!< Switch off all grids and lines of GridMgr while in Ocular view
 	bool flagGridLinesDisplayedMain; //!< keep track of gridline display while possibly suppressing their display.
 	bool flagConstellationLinesMain; //!< keep track of constellation display while possibly suppressing their display.
+	bool flagConstellationBoundariesMain; //!< keep track of constellation display while possibly suppressing their display.
 	bool flagAsterismLinesMain;      //!< keep track of asterism display while possibly suppressing their display.
 	bool flagRayHelpersLinesMain;      //!< keep track of ray helpers display while possibly suppressing their display.
 	bool flipVertMain;               //!< keep track of screen flip in main program
@@ -388,6 +396,7 @@ private:
 	bool flagInitFOVUsage;		//!< Flag used to track if we use default initial FOV (value at the startup of planetarium).
 	bool flagInitDirectionUsage;	//!< Flag used to track if we use default initial direction (value at the startup of planetarium).
 	bool flagAutosetMountForCCD;	//!< Flag used to track if we use automatic switch to type of mount for CCD frame
+	bool flagScalingFOVForTelrad;	//!< Flag used to track if we use automatic scaling FOV for Telrad
 	bool flagShowResolutionCriterions;
 	bool equatorialMountEnabledMain;  //!< Keep track of mount used in main program.
 	double reticleRotation;

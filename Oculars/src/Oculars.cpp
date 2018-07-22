@@ -135,6 +135,7 @@ Oculars::Oculars():
 	flagHideGridsLines(false),
 	flagGridLinesDisplayedMain(true),
 	flagConstellationLinesMain(true),
+	flagConstellationBoundariesMain(true),
 	flagAsterismLinesMain(true),
 	flagRayHelpersLinesMain(true),
 	flipVertMain(false),
@@ -166,6 +167,7 @@ Oculars::Oculars():
 	flagInitFOVUsage(false),
 	flagInitDirectionUsage(false),
 	flagAutosetMountForCCD(false),
+	flagScalingFOVForTelrad(false),
 	flagShowResolutionCriterions(false),
 	equatorialMountEnabledMain(false),
 	reticleRotation(0.)
@@ -244,25 +246,25 @@ void Oculars::deinit()
 	settings->remove("telescope");
 	settings->remove("lens");
 	int index = 0;
-	foreach(CCD* ccd, ccds)
+	for (auto* ccd : ccds)
 	{
 		ccd->writeToSettings(settings, index);
 		index++;
 	}
 	index = 0;
-	foreach(Ocular * ocular, oculars)
+	for (auto* ocular : oculars)
 	{
 		ocular->writeToSettings(settings, index);
 		index++;
 	}
 	index = 0;
-	foreach(Telescope* telescope, telescopes)
+	for (auto* telescope : telescopes)
 	{
 		telescope->writeToSettings(settings, index);
 		index++;
 	}
 	index = 0;
-	foreach(Lens* lens, lenses)
+	for (auto* lens : lenses)
 	{
 		lens->writeToSettings(settings, index);
 		index++;
@@ -705,6 +707,7 @@ void Oculars::init()
 		setFlagUseSemiTransparency(settings->value("use_semi_transparency", false).toBool());
 		setFlagHideGridsLines(settings->value("hide_grids_and_lines", true).toBool());
 		setFlagAutosetMountForCCD(settings->value("use_mount_autoset", false).toBool());
+		setFlagScalingFOVForTelrad(settings->value("use_telrad_fov_scaling", true).toBool());
 		setFlagShowResolutionCriterions(settings->value("show_resolution_criterions", false).toBool());
 		setArrowButtonScale(settings->value("arrow_scale", 1.5).toDouble());
 		relativeStarScaleOculars=settings->value("stars_scale_relative", 1.0).toDouble();
@@ -735,7 +738,7 @@ void Oculars::determineMaxEyepieceAngle()
 {
 	if (ready)
 	{
-		foreach (Ocular* ocular, oculars)
+		for (const auto* ocular : oculars)
 		{
 			if (ocular->appearentFOV() > maxEyepieceAngle)
 			{
@@ -1462,6 +1465,8 @@ void Oculars::toggleTelrad(bool show)
 {
 	if(show!=flagShowTelrad)
 	{
+		flagShowTelrad = show;
+
 		StelMovementMgr* movementMgr = StelApp::getInstance().getCore()->getMovementMgr();
 		if (show)
 		{
@@ -1470,7 +1475,8 @@ void Oculars::toggleTelrad(bool show)
 			toggleCCD(false);
 			// NOTE: Added special zoom level for Telrad
 			// Seems problem was introduced with introducing StelProperty feature
-			movementMgr->zoomTo(10.0);
+			if (flagScalingFOVForTelrad)
+				movementMgr->zoomTo(10.0);
 		}
 		else if (getFlagInitFovUsage()) // Restoration of FOV is needed?
 			movementMgr->zoomTo(movementMgr->getInitFov());
@@ -1478,7 +1484,6 @@ void Oculars::toggleTelrad(bool show)
 		if (getFlagInitDirectionUsage())
 			movementMgr->setViewDirectionJ2000(StelApp::getInstance().getCore()->altAzToJ2000(movementMgr->getInitViewingDirection(), StelCore::RefractionOff));
 
-		flagShowTelrad = show;
 		emit enableTelradChanged(flagShowTelrad);
 	}
 }
@@ -1551,7 +1556,7 @@ void Oculars::initializeActivationActions()
 bool Oculars::isBinocularDefined()
 {
 	bool binocularFound = false;
-	foreach (Ocular* ocular, oculars)
+	for (auto* ocular : oculars)
 	{
 		if (ocular->isBinoculars())
 		{
@@ -1821,8 +1826,7 @@ void Oculars::paintOcularMask(const StelCore *core)
 	float alpha = 1.f;
 	if (getFlagUseSemiTransparency())
 		alpha = 0.85f;
-
-	painter.setColor(0.f,0.f,0.f,alpha);
+    painter.setColor(0.f,0.f,0.f,alpha);
 
 	GLfloat outerRadius = params.viewportXywh[2] * params.devicePixelsPerPixel + params.viewportXywh[3] * params.devicePixelsPerPixel;
 	GLint slices = 239;
@@ -1835,6 +1839,12 @@ void Oculars::paintOcularMask(const StelCore *core)
 
 	/* Compute length (needed for normal calculations) */
 	deltaRadius=outerRadius-inner;
+
+    float r, g, b;
+    r = 25./255.; g = 25./255.; b = 112./255.;
+    painter.setColor(r, g, b, alpha);//1.f,1.f,1.f,alpha);
+    painter.drawCircle(centerScreen[0], centerScreen[1], (outerRadius - deltaRadius));
+
 
 	/* Cache is the vertex locations cache */
 	for (int i=0; i<=slices; i++)
@@ -1861,6 +1871,8 @@ void Oculars::paintOcularMask(const StelCore *core)
 		vertices[i*2+1][1]= centerScreen[1] + radiusHigh*cosCache[i];
 		vertices[i*2+1][2] = 0.0;
 	}
+
+    painter.setColor(0.f,0.f,0.f,alpha);
 	painter.drawFromArray(StelPainter::TriangleStrip, (slices+1)*2, 0, false);
 	painter.enableClientStates(false);
 }
@@ -2127,13 +2139,7 @@ void Oculars::unzoomOcular()
 	StelSkyDrawer *skyDrawer = core->getSkyDrawer();
 
 	if (flagHideGridsLines)
-	{
-		GETSTELMODULE(GridLinesMgr)->setFlagGridlines(flagGridLinesDisplayedMain);
-		GETSTELMODULE(LandscapeMgr)->setFlagCardinalsPoints(flagCardinalPointsMain);
-		GETSTELMODULE(ConstellationMgr)->setFlagLines(flagConstellationLinesMain);
-		GETSTELMODULE(AsterismMgr)->setFlagLines(flagAsterismLinesMain);
-		GETSTELMODULE(AsterismMgr)->setFlagRayHelpers(flagRayHelpersLinesMain);
-	}
+		toggleLines(true);
 
 	skyDrawer->setFlagLuminanceAdaptation(flagAdaptationMain);
 	skyDrawer->setFlagStarMagnitudeLimit(flagLimitStarsMain);
@@ -2179,31 +2185,33 @@ void Oculars::zoom(bool zoomedIn)
 		if (!zoomedIn)
 		{
 			StelCore *core = StelApp::getInstance().getCore();
+			StelPropertyMgr* propMgr=StelApp::getInstance().getStelPropertyManager();
 
 			if (flagHideGridsLines)
 			{
 				// Store current state for later resetting
-				flagGridLinesDisplayedMain=GETSTELMODULE(GridLinesMgr)->getFlagGridlines();
-				flagCardinalPointsMain = GETSTELMODULE(LandscapeMgr)->getFlagCardinalsPoints();
-				flagConstellationLinesMain = GETSTELMODULE(ConstellationMgr)->getFlagLines();
-				flagAsterismLinesMain = GETSTELMODULE(AsterismMgr)->getFlagLines();
-				flagRayHelpersLinesMain = GETSTELMODULE(AsterismMgr)->getFlagRayHelpers();
+				flagGridLinesDisplayedMain	= propMgr->getStelPropertyValue("GridLinesMgr.gridlinesDisplayed").toBool();
+				flagCardinalPointsMain		= propMgr->getStelPropertyValue("LandscapeMgr.cardinalsPointsDisplayed").toBool();
+				flagConstellationLinesMain	= propMgr->getStelPropertyValue("ConstellationMgr.linesDisplayed").toBool();
+				flagConstellationBoundariesMain	= propMgr->getStelPropertyValue("ConstellationMgr.boundariesDisplayed").toBool();
+				flagAsterismLinesMain		= propMgr->getStelPropertyValue("AsterismMgr.linesDisplayed").toBool();
+				flagRayHelpersLinesMain		= propMgr->getStelPropertyValue("AsterismMgr.rayHelpersDisplayed").toBool();
 			}
 
 			StelSkyDrawer *skyDrawer = core->getSkyDrawer();
 			// Current state
-			flagAdaptationMain = skyDrawer->getFlagLuminanceAdaptation();
-			flagLimitStarsMain = skyDrawer->getFlagStarMagnitudeLimit();
-			flagLimitPlanetsMain = skyDrawer->getFlagPlanetMagnitudeLimit();
-			flagLimitDSOsMain = skyDrawer->getFlagNebulaMagnitudeLimit();
-			magLimitStarsMain = skyDrawer->getCustomStarMagnitudeLimit();
-			magLimitPlanetsMain = skyDrawer->getCustomPlanetMagnitudeLimit();
-			magLimitDSOsMain = skyDrawer->getCustomNebulaMagnitudeLimit();
-			relativeStarScaleMain = skyDrawer->getRelativeStarScale();
-			absoluteStarScaleMain = skyDrawer->getAbsoluteStarScale();
+			flagAdaptationMain	= skyDrawer->getFlagLuminanceAdaptation();
+			flagLimitStarsMain	= skyDrawer->getFlagStarMagnitudeLimit();
+			flagLimitPlanetsMain	= skyDrawer->getFlagPlanetMagnitudeLimit();
+			flagLimitDSOsMain	= skyDrawer->getFlagNebulaMagnitudeLimit();
+			magLimitStarsMain	= skyDrawer->getCustomStarMagnitudeLimit();
+			magLimitPlanetsMain	= skyDrawer->getCustomPlanetMagnitudeLimit();
+			magLimitDSOsMain	= skyDrawer->getCustomNebulaMagnitudeLimit();
+			relativeStarScaleMain	= skyDrawer->getRelativeStarScale();
+			absoluteStarScaleMain	= skyDrawer->getAbsoluteStarScale();
 
-			flagMoonScaleMain = GETSTELMODULE(SolarSystem)->getFlagMoonScale();
-			flagMinorBodiesScaleMain = GETSTELMODULE(SolarSystem)->getFlagMinorBodyScale();
+			flagMoonScaleMain		= propMgr->getStelPropertyValue("SolarSystem.flagMoonScale").toBool();
+			flagMinorBodiesScaleMain	= propMgr->getStelPropertyValue("SolarSystem.flagMinorBodyScale").toBool();
 
 			flipHorzMain = core->getFlipHorz();
 			flipVertMain = core->getFlipVert();
@@ -2222,6 +2230,34 @@ void Oculars::zoom(bool zoomedIn)
 	}
 }
 
+void Oculars::toggleLines(bool visible)
+{
+	if (flagShowTelrad)
+		return;
+
+	StelPropertyMgr* propMgr=StelApp::getInstance().getStelPropertyManager();
+
+	if (visible)
+	{
+		propMgr->setStelPropertyValue("GridLinesMgr.gridlinesDisplayed", flagGridLinesDisplayedMain);
+		propMgr->setStelPropertyValue("LandscapeMgr.cardinalsPointsDisplayed", flagCardinalPointsMain);
+		propMgr->setStelPropertyValue("ConstellationMgr.linesDisplayed", flagConstellationLinesMain);
+		propMgr->setStelPropertyValue("ConstellationMgr.boundariesDisplayed", flagConstellationBoundariesMain);
+		propMgr->setStelPropertyValue("AsterismMgr.linesDisplayed", flagAsterismLinesMain);
+		propMgr->setStelPropertyValue("AsterismMgr.rayHelpersDisplayed", flagRayHelpersLinesMain);
+	}
+	else
+	{
+		propMgr->setStelPropertyValue("GridLinesMgr.gridlinesDisplayed", false);
+		propMgr->setStelPropertyValue("LandscapeMgr.cardinalsPointsDisplayed", false);
+		propMgr->setStelPropertyValue("ConstellationMgr.linesDisplayed", false);
+		propMgr->setStelPropertyValue("ConstellationMgr.boundariesDisplayed", false);
+		propMgr->setStelPropertyValue("AsterismMgr.linesDisplayed", false);
+		propMgr->setStelPropertyValue("AsterismMgr.rayHelpersDisplayed", false);
+	}
+
+}
+
 void Oculars::zoomOcular()
 {
 	StelCore *core = StelApp::getInstance().getCore();
@@ -2229,12 +2265,7 @@ void Oculars::zoomOcular()
 	StelSkyDrawer *skyDrawer = core->getSkyDrawer();
 
 	if (flagHideGridsLines)
-	{
-		GETSTELMODULE(GridLinesMgr)->setFlagGridlines(false);
-		GETSTELMODULE(LandscapeMgr)->setFlagCardinalsPoints(false);
-		GETSTELMODULE(ConstellationMgr)->setFlagLines(false);
-		GETSTELMODULE(AsterismMgr)->setFlagLines(false);
-	}
+		toggleLines(false);
 
 	skyDrawer->setFlagLuminanceAdaptation(false);
 
@@ -2476,6 +2507,19 @@ bool Oculars::getFlagAutosetMountForCCD() const
 	return  flagAutosetMountForCCD;
 }
 
+void Oculars::setFlagScalingFOVForTelrad(const bool b)
+{
+	flagScalingFOVForTelrad = b;
+	settings->setValue("use_telrad_fov_scaling", b);
+	settings->sync();
+	emit flagScalingFOVForTelradChanged(b);
+}
+
+bool Oculars::getFlagScalingFOVForTelrad() const
+{
+	return  flagScalingFOVForTelrad;
+}
+
 void Oculars::setFlagUseSemiTransparency(const bool b)
 {
 	flagSemiTransparency = b;
@@ -2527,24 +2571,19 @@ void Oculars::setFlagHideGridsLines(const bool b)
 		if (b && flagShowOculars)
 		{
 			// Store current state for later resetting
-			flagGridLinesDisplayedMain = GETSTELMODULE(GridLinesMgr)->getFlagGridlines();
-			flagCardinalPointsMain     = GETSTELMODULE(LandscapeMgr)->getFlagCardinalsPoints();
-			flagConstellationLinesMain = GETSTELMODULE(ConstellationMgr)->getFlagLines();
-			flagAsterismLinesMain      = GETSTELMODULE(AsterismMgr)->getFlagLines();
-			flagRayHelpersLinesMain  = GETSTELMODULE(AsterismMgr)->getFlagRayHelpers();
-			GETSTELMODULE(GridLinesMgr)->setFlagGridlines(false);
-			GETSTELMODULE(LandscapeMgr)->setFlagCardinalsPoints(false);
-			GETSTELMODULE(ConstellationMgr)->setFlagLines(false);
-			GETSTELMODULE(AsterismMgr)->setFlagLines(false);
+			StelPropertyMgr* propMgr=StelApp::getInstance().getStelPropertyManager();
+			flagGridLinesDisplayedMain	= propMgr->getStelPropertyValue("GridLinesMgr.gridlinesDisplayed").toBool();
+			flagCardinalPointsMain		= propMgr->getStelPropertyValue("LandscapeMgr.cardinalsPointsDisplayed").toBool();
+			flagConstellationLinesMain	= propMgr->getStelPropertyValue("ConstellationMgr.linesDisplayed").toBool();
+			flagConstellationBoundariesMain	= propMgr->getStelPropertyValue("ConstellationMgr.boundariesDisplayed").toBool();
+			flagAsterismLinesMain		= propMgr->getStelPropertyValue("AsterismMgr.linesDisplayed").toBool();
+			flagRayHelpersLinesMain		= propMgr->getStelPropertyValue("AsterismMgr.rayHelpersDisplayed").toBool();
+			toggleLines(false);
 		}
 		else if (!b && flagShowOculars)
 		{
 			// Restore main program state
-			GETSTELMODULE(GridLinesMgr)->setFlagGridlines(flagGridLinesDisplayedMain);
-			GETSTELMODULE(LandscapeMgr)->setFlagCardinalsPoints(flagCardinalPointsMain);
-			GETSTELMODULE(ConstellationMgr)->setFlagLines(flagConstellationLinesMain);
-			GETSTELMODULE(AsterismMgr)->setFlagLines(flagAsterismLinesMain);
-			GETSTELMODULE(AsterismMgr)->setFlagRayHelpers(flagRayHelpersLinesMain);
+			toggleLines(true);
 		}
 	}
 }
