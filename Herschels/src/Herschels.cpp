@@ -1223,6 +1223,8 @@ void Herschels::runSweep()
     qWarning() << startRA << ", " << startDec;
 
     //set up oculars if we choose to use them
+    //The Herschel telescope parameters are hard coded. If you change their location
+    //in the Ocular plugin you have to change it in this conditional as well
     if (flagUseOculars)
     {
         flagProjectSweeps = false;
@@ -1321,18 +1323,32 @@ void Herschels::runSweep()
                 qWarning() << "deltaRA is " << deltaRADegs;
                 stelMovementMgr->setEquatorialMount(true);
             }
-            stelMovementMgr->smoothPan(raMotion, deltaDecDegs, secsPerSweep/rate, true);
-            mainScriptAPI->wait(secsPerSweep/rate);
-            stelMovementMgr->smoothPan(raMotion, deltaDecDegs, secsPerSweep/rate, false);
+            float step = secsPerSweep/(100.0*rate);
+            for (float tim = 0; tim < (secsPerSweep/rate);)
+            {
+                stelMovementMgr->smoothPan(raMotion, deltaDecDegs, (secsPerSweep/rate), true);
+                mainScriptAPI->wait(step);
+                stelMovementMgr->smoothPan(raMotion, deltaDecDegs, (secsPerSweep/rate), false);
+                tim += step;
+                if (flagStopSweep) {tim = (secsPerSweep/rate)+100.0;}
+            }
             if (flagStopSweep)
             {
                 i = numSweeps;
             }
-            stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, secsPerSweep/rate, true);
-            //qWarning() << "move up";
-            //qWarning() << "motion time = " << secsPerSweep;
-            mainScriptAPI->wait(secsPerSweep/rate);
-            stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, secsPerSweep/rate, false);
+            for (float tim = 0; tim < (secsPerSweep/rate);)
+            {
+                stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, (secsPerSweep/rate), true);
+                mainScriptAPI->wait(step);
+                stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, (secsPerSweep/rate), false);
+                tim += step;
+                if (flagStopSweep) {tim = (secsPerSweep/rate)+100.0;}
+            }
+//            stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, secsPerSweep/rate, true);
+//            //qWarning() << "move up";
+//            //qWarning() << "motion time = " << secsPerSweep;
+//            mainScriptAPI->wait(secsPerSweep/rate);
+//            stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, secsPerSweep/rate, false);
 
         }
         if (flagStopSweep)
