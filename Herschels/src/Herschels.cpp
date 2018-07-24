@@ -8,6 +8,7 @@ the sky and point to the center of that box.
 #include "HerschelsDialog.hpp"
 #include "CalendarDialog.hpp"
 #include "SweepEffectsDialog.hpp"
+#include "StopDialog.hpp"
 
 #include "Ocular.hpp"
 #include "Oculars.hpp"
@@ -143,6 +144,9 @@ Herschels::~Herschels()
     delete sweepEffectsDialog;
     sweepEffectsDialog = Q_NULLPTR;
 
+    delete stopDialog;
+    stopDialog = Q_NULLPTR;
+
     qDeleteAll(sweeps);
     sweeps.clear();
 
@@ -269,6 +273,8 @@ void Herschels::handleMouseClicks(class QMouseEvent* event)
 
                 if (regionsVisible.value(sweepInd).checkValid())
                 {
+                    StelApp::getInstance().getStelObjectMgr().unSelect();
+                    event->setAccepted(true);
                     selectSweepAtIndex(sweepInd);
                 }
                 //qWarning() << selectedSweep()->name();
@@ -426,7 +432,10 @@ void Herschels::init()
         //initialize our dialogs
         qWarning() << "call to Dialogs";
         herschelsDialog = new HerschelsDialog(this, &sweeps);
+        stopDialog = new StopDialog(this, herschelsDialog);
         calendarDialog = new CalendarDialog(this, herschelsDialog, sweeps);
+
+        setStopDialogPos();
 
         qWarning() << "Attmpt to set up actions";
         initializeActivationActions();
@@ -537,6 +546,19 @@ void Herschels::updateSweep(void)
 void Herschels::stopScript(void)
 {
 
+}
+
+void Herschels::setStopDialogPos()
+{
+    StelCore *core = StelApp::getInstance().getCore();
+    // Get the X & Y positions
+    StelProjector::StelProjectorParams projectorParams = core->getCurrentStelProjectorParams();
+    int xPosition = projectorParams.viewportXywh[2] - projectorParams.viewportCenterOffset[0];
+    xPosition -= 0;//insetFromRHS;
+    int yPosition = projectorParams.viewportXywh[3] - projectorParams.viewportCenterOffset[1];
+    yPosition -= 0;//projectorParams.viewportXywh[3]/(4.0);//projectorParams.viewportCenterOffset[1]/2.0; //250;
+    QPoint wantedPos = QPoint(xPosition, yPosition);
+    stopDialog->handleMovedTo(wantedPos);
 }
 
 /* ****************************************************************************************************************** */
@@ -1124,6 +1146,7 @@ void Herschels::restoreDefaults()
     labelMgr->setLabelShow(label, false);
     if (flagUseOculars) {flagProjectSweeps = true;}
     sweepEffectsDialog->setVisible(false);
+    stopDialog->setVisible(false);
     mainScriptAPI->goHome();
 }
 
@@ -1152,6 +1175,9 @@ void Herschels::runSweep()
     //save the settings before running the sweep
     establishDefaults();
     flagStopSweep=false;
+    setStopDialogPos();
+
+    stopDialog->setVisible(true);
     //initialize core and sweep, and extract elements of the sweep
     StelCore *core = StelApp::getInstance().getCore();
     Sweep *sweep = sweeps[selectedSweepIndex];
@@ -1254,6 +1280,7 @@ void Herschels::runSweep()
     if (flagShowSweepEffects)
     {
         sweepEffectsDialog->setVisible(true);
+        stopDialog->setVisible(false);
     }
 
     flagShowSweep = true;
@@ -1374,6 +1401,7 @@ void Herschels::runSweep()
     mainScriptAPI->wait(0.5);
     labelMgr->setLabelShow(label, false);
     //mainScriptAPI->setGuiVisible(true);
+    stopDialog->setVisible(false);
     herschelsDialog->setVisible(true);
 
     restoreDefaults();

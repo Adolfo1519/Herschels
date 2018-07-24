@@ -64,6 +64,8 @@ SET(Herschels_SRCS
         gui/SweepEffectsDialog.cpp
     gui/CalendarDialog.hpp
         gui/CalendarDialog.cpp
+    gui/StopDialog.hpp
+        gui/StopDialog.cpp
  )
 
 SET(Herschels_UIS
@@ -71,6 +73,7 @@ SET(Herschels_UIS
     gui/herschelsDialog.ui
     gui/sweepEffectsDialog.ui
     gui/calendarDialog.ui
+    gui/stopDialog.ui
 )
 
 SET(Herschels_RES_CXX
@@ -83,6 +86,7 @@ SET(Herschels_MOC_HDRS
   gui/HerschelsDialog.hpp
   gui/SweepEffectsDialog.hpp
   gui/CalendarDialog.hpp
+  gui/StopDialog.hpp
   Herschels.hpp
   Sweep.hpp
   SweepTools.hpp

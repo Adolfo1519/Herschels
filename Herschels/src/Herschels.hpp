@@ -16,6 +16,7 @@
 #include "HerschelsDialog.hpp"
 #include "SweepEffectsDialog.hpp"
 #include "CalendarDialog.hpp"
+#include "StopDialog.hpp"
 #include "StelMovementMgr.hpp"
 #include "StelMainScriptAPI.hpp"
 //#include "Oculars.hpp"
@@ -180,6 +181,7 @@ private slots:
     void sweepChanged();
     void updateSweep(void);   //This one also seems useful
     void stopScript(void);
+    void setStopDialogPos(void);
 
 private:
     //! Set up the Qt actions needed to activate the plugin.
@@ -254,6 +256,7 @@ private:
     CalendarDialog *calendarDialog;
     HerschelsDialog *herschelsDialog;
     SweepEffectsDialog *sweepEffectsDialog;
+    StopDialog *stopDialog;
 
     StelButton* toolbarButton;
     Oculars* ocularsPlugin;
