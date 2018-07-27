@@ -5,5 +5,9 @@
         <file>bt_telrad_off.png</file>
         <file>bt_ocular_off.png</file>
         <file>Sweep65.png</file>
+        <file>Herschels_button_off.png</file>
+        <file>Herschels_button_on.png</file>
+        <file>RAS_button_off.png</file>
+        <file>RAS_button_on.png</file>
     </qresource>
 </RCC>

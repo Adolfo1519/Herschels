@@ -53,6 +53,8 @@ the sky and point to the center of that box.
 #include <QMouseEvent>
 #include <QPixmap>
 #include <QSignalMapper>
+#include <QTextStream>
+
 
 #include <cmath>
 
@@ -451,8 +453,8 @@ void Herschels::init()
                 //Sweep *sweep = sweeps[selectedSweepIndex];
 
                 toolbarButton = new StelButton(gui->getButtonBar(),
-                                   QPixmap(":/sweep/bt_telrad_on.png"),
-                                   QPixmap(":/sweep/bt_telrad_off.png"),
+                                   QPixmap(":/sweep/RAS_button_on.png"),
+                                   QPixmap(":/sweep/RAS_button_off.png"),
                                    QPixmap(":/sweep/bt_ocular_off.png"),
                                    this->actionConfiguration, true);
 
@@ -1100,7 +1102,7 @@ void Herschels::hideSweepImage()
     if (!flagShowOriginalImage)
     {
         tex->hide();
-        qWarning() << "concealing image";
+        //qWarning() << "concealing image";
     }
 }
 
@@ -1351,12 +1353,16 @@ void Herschels::runSweep()
                 stelMovementMgr->setEquatorialMount(true);
             }
             float step = secsPerSweep/(100.0*rate);
+            qWarning() << "step set at " << step;
             for (float tim = 0; tim < (secsPerSweep/rate);)
             {
                 stelMovementMgr->smoothPan(raMotion, deltaDecDegs, (secsPerSweep/rate), true);
+                qWarning() << "moving up";
                 mainScriptAPI->wait(step);
                 stelMovementMgr->smoothPan(raMotion, deltaDecDegs, (secsPerSweep/rate), false);
                 tim += step;
+                qWarning() << "in loop, step is " << step;
+                qWarning() << "time so far is " << tim;
                 if (flagStopSweep) {tim = (secsPerSweep/rate)+100.0;}
             }
             if (flagStopSweep)
@@ -1366,9 +1372,12 @@ void Herschels::runSweep()
             for (float tim = 0; tim < (secsPerSweep/rate);)
             {
                 stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, (secsPerSweep/rate), true);
+                qWarning() << "moving Down";
                 mainScriptAPI->wait(step);
                 stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, (secsPerSweep/rate), false);
                 tim += step;
+                qWarning() << "in loop, step is " << step;
+                qWarning() << "time so far is " << tim;
                 if (flagStopSweep) {tim = (secsPerSweep/rate)+100.0;}
             }
 //            stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, secsPerSweep/rate, true);
@@ -1414,10 +1423,22 @@ void Herschels::movieMode()
     flagPlayMovie = true;
     for (int ind = 0; ind < sweeps.count(); ind++)
     {
-        pointToSweep();
-        runSweep();
-        if (!flagPlayMovie) {ind = 100000;}
-        incrementSweepIndex();
+        if (flagPlayMovie)
+        {
+            pointToSweep();
+            runSweep();
+            if (!flagPlayMovie) {ind = 100000;}
+            if (selectedSweepIndex == sweeps.count()-1)
+            {
+                restoreDefaults();
+            }
+            else
+            {
+                incrementSweepIndex();
+            }
+
+        }
+
     }
 }
 
@@ -1481,7 +1502,7 @@ void Herschels::paintText(const StelCore* core)
     int xPosition = 20;//projectorParams.viewportXywh[2] - projectorParams.viewportCenterOffset[0];
     xPosition -= 0;//insetFromRHS;
     int yPosition = projectorParams.viewportXywh[3] - projectorParams.viewportCenterOffset[1];
-    yPosition -= 250;
+    yPosition -= projectorParams.viewportXywh[3]/(4.0/3.0);//projectorParams.viewportCenterOffset[1]/2.0; //250;
     const int lineHeight = painter.getFontMetrics().height();
 
 
@@ -1535,6 +1556,19 @@ void Herschels::paintText(const StelCore* core)
         currentlyAt = cxt + ", " + cyt;
         painter.drawText(xPosition, yPosition, "Currently At: " + currentlyAt);
         yPosition-=lineHeight;
+
+//        QString str;
+//        QTextStream oss(&str);
+//        QString infoString;
+
+//        infoString += sweepNumberLabel + "<br>";
+//        infoString += "Date: " + date + "<br>";
+//        infoString += "Start RA: " + sweep->startRA() + "<br>";
+//        infoString += "End RA: " + sweep->endRA() + "<br>";
+//        infoString += "Top Dec: " + sweep->startDec() + "<br>";
+//        infoString += "Bottom Dec: " + sweep->endDec() + "<br>";
+//        infoString += "currently At: " + currentlyAt + "<br>";
+//        oss << infoString;
 
 
 
