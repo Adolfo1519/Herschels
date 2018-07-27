@@ -807,7 +807,10 @@ void Herschels::draw(StelCore *core)
         //sweepEffectsDialog->setVisible(true);//setVisible(true);
         //sweepEffectsDialog->updateCircles();
     }
-
+    if (flagShowSweep)
+    {
+        paintText(core);
+    }
     if (flagShowSweepEffects && flagShowSweep)
     {
         sweepEffectsDialog->updateCircles();
@@ -1502,7 +1505,7 @@ void Herschels::paintText(const StelCore* core)
     int xPosition = 20;//projectorParams.viewportXywh[2] - projectorParams.viewportCenterOffset[0];
     xPosition -= 0;//insetFromRHS;
     int yPosition = projectorParams.viewportXywh[3] - projectorParams.viewportCenterOffset[1];
-    yPosition -= projectorParams.viewportXywh[3]/(4.0/3.0);//projectorParams.viewportCenterOffset[1]/2.0; //250;
+    yPosition -= projectorParams.viewportXywh[3]/(4.0);//projectorParams.viewportCenterOffset[1]/2.0; //250;
     const int lineHeight = painter.getFontMetrics().height();
 
 
