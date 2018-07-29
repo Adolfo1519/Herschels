@@ -103,6 +103,7 @@ public:
     void showSweepImage();
     void hideSweepImage();
 
+    QString createMoviesDirectory();
 
 public slots:
     //! Update the sweep list after the removal of a member.

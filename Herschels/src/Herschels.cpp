@@ -1109,6 +1109,37 @@ void Herschels::hideSweepImage()
     }
 }
 
+QString Herschels::createMoviesDirectory()
+{
+    Sweep* sweep = sweeps[selectedSweepIndex];
+    QString sweepName = sweep->name();
+    sweepName.replace(" ","");
+    QString home = StelFileMgr::getUserDir();
+    qWarning() << std::getenv("HOME");
+    qWarning() << home;
+    home = std::getenv("HOME");
+    home.append("/");
+//    home.replace(".stellarium", "");
+    StelFileMgr::makeSureDirExistsAndIsWritable(home+"Documents/SweepMovies/"+sweepName);
+    StelFileMgr::Flags flags = (StelFileMgr::Flags)(StelFileMgr::Directory|StelFileMgr::Writable);
+    bool existsAlready = StelFileMgr::isDirectory(home+"Documents/SweepMovies/"+sweepName);
+    QString sweepMoviePath = home+"Documents/SweepMovies/"+sweepName;
+    qWarning() << sweepMoviePath << " " << existsAlready;
+    if (existsAlready)//(!(sweepMoviePath.isEmpty()))
+    {
+        return sweepMoviePath;
+    }
+    else
+    {
+        QDir().mkdir(sweepMoviePath);
+    }
+
+    return sweepMoviePath;
+
+//    QString sweepIniPath = StelFileMgr::findFile("modules/Herschels/", flags) + "sweep.ini";
+
+}
+
 
 //*****************************************************************
 void Herschels::establishDefaults()
@@ -1183,6 +1214,7 @@ void Herschels::runSweep()
     setStopDialogPos();
 
     stopDialog->setVisible(true);
+    QString dirName = createMoviesDirectory();
     //initialize core and sweep, and extract elements of the sweep
     StelCore *core = StelApp::getInstance().getCore();
     Sweep *sweep = sweeps[selectedSweepIndex];
@@ -1336,7 +1368,7 @@ void Herschels::runSweep()
                                                    endRARads,
                                                    timeDif,
                                                    fovRad);
-    double numSweeps = timeDif/secsPerSweep;
+    double numSweeps = timeDif/(secsPerSweep);
    // long double sweepsUp = std::floor(numSweeps/2.0);
    // long double sweepsDown = std::floor((numSweeps+1.0)/2.0);
     qWarning() << "total time is " << timeDif;
@@ -1360,12 +1392,12 @@ void Herschels::runSweep()
             for (float tim = 0; tim < (secsPerSweep/rate);)
             {
                 stelMovementMgr->smoothPan(raMotion, deltaDecDegs, (secsPerSweep/rate), true);
-                qWarning() << "moving up";
+                //qWarning() << "moving up";
                 mainScriptAPI->wait(step);
                 stelMovementMgr->smoothPan(raMotion, deltaDecDegs, (secsPerSweep/rate), false);
                 tim += step;
-                qWarning() << "in loop, step is " << step;
-                qWarning() << "time so far is " << tim;
+                //qWarning() << "in loop, step is " << step;
+                //qWarning() << "time so far is " << tim;
                 if (flagStopSweep) {tim = (secsPerSweep/rate)+100.0;}
             }
             if (flagStopSweep)
@@ -1375,12 +1407,12 @@ void Herschels::runSweep()
             for (float tim = 0; tim < (secsPerSweep/rate);)
             {
                 stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, (secsPerSweep/rate), true);
-                qWarning() << "moving Down";
+                //qWarning() << "moving Down";
                 mainScriptAPI->wait(step);
                 stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, (secsPerSweep/rate), false);
                 tim += step;
-                qWarning() << "in loop, step is " << step;
-                qWarning() << "time so far is " << tim;
+               // qWarning() << "in loop, step is " << step;
+               // qWarning() << "time so far is " << tim;
                 if (flagStopSweep) {tim = (secsPerSweep/rate)+100.0;}
             }
 //            stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, secsPerSweep/rate, true);
@@ -1428,12 +1460,14 @@ void Herschels::movieMode()
     {
         if (flagPlayMovie)
         {
+            qWarning() << "index is " << selectedSweepIndex << "/ " << sweeps.count();
             pointToSweep();
             runSweep();
             if (!flagPlayMovie) {ind = 100000;}
-            if (selectedSweepIndex == sweeps.count()-1)
+            if (selectedSweepIndex == (sweeps.count()-1))
             {
                 restoreDefaults();
+                flagPlayMovie = false;
             }
             else
             {
