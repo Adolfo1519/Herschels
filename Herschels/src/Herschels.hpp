@@ -183,6 +183,7 @@ private slots:
     void updateSweep(void);   //This one also seems useful
     void stopScript(void);
     void setStopDialogPos(void);
+    void setRequestedTimeRate(double timeRate);
 
 private:
     //! Set up the Qt actions needed to activate the plugin.
@@ -284,6 +285,7 @@ private:
     //radians
     double cx, cy;
     int i;
+    double requestedTimeRate;
 
 };
 

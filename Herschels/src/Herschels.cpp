@@ -121,7 +121,8 @@ Herschels::Herschels():
     actionConfiguration(Q_NULLPTR),
     actionMenu(Q_NULLPTR),
     actionSweepIncrement(Q_NULLPTR),
-    actionSweepDecrement(Q_NULLPTR)
+    actionSweepDecrement(Q_NULLPTR),
+    requestedTimeRate(1.0)
 {
     // Font size is 14
     font.setPixelSize(StelApp::getInstance().getBaseFontSize()+1);
@@ -482,7 +483,7 @@ void Herschels::init()
     connect(&StelApp::getInstance(), SIGNAL(languageChanged()), this, SLOT(retranslateGui()));
     connect(this, SIGNAL(selectedSweepChanged(int)), this, SLOT(updateSweep()));
     //StelApp& app = StelApp::getInstance();
-
+    requestedTimeRate = 1.0;
 
 
 }
@@ -561,6 +562,11 @@ void Herschels::setStopDialogPos()
     yPosition -= 0;//projectorParams.viewportXywh[3]/(4.0);//projectorParams.viewportCenterOffset[1]/2.0; //250;
     QPoint wantedPos = QPoint(xPosition, yPosition);
     stopDialog->handleMovedTo(wantedPos);
+}
+
+void Herschels::setRequestedTimeRate(double timeRate)
+{
+    requestedTimeRate = timeRate;
 }
 
 /* ****************************************************************************************************************** */
@@ -1159,6 +1165,7 @@ void Herschels::establishDefaults()
 
 void Herschels::restoreDefaults()
 {
+    requestedTimeRate=1.0;
     flagStopSweep = true;
     flagShowSweep = false;
     setFlagShowOriginalImage(false);
@@ -1239,7 +1246,7 @@ void Herschels::runSweep()
     labelMgr->deleteLabel(label);
     StelMainScriptAPI *mainScriptAPI = new StelMainScriptAPI(this);
     StelMovementMgr * stelMovementMgr=core->getMovementMgr();
-
+    mainScriptAPI->setTimeRate(0.0);
     //Set date and location
     herschelsDialog->setVisible(false);
     mainScriptAPI->setObserverLocation("Bath, Britain (UK)", 0.1);
@@ -1329,7 +1336,7 @@ void Herschels::runSweep()
 
     //establish the geometry and time of the sweep
     double timeDif = SweepTools::timeDifSecs(startRA,endRA);
-    double rate = mainScriptAPI->getTimeRate();
+    double rate = requestedTimeRate;//mainScriptAPI->getTimeRate();
     qWarning() << startDec;
     qWarning()<< endDec;
 
@@ -1375,7 +1382,14 @@ void Herschels::runSweep()
     qWarning() << "time per sweeps is " << secsPerSweep;
 
     //run the actual sweep
-    for (i=0; i<(numSweeps/2.0); i++)
+
+    //qWarning() << requestedTimeRate << ", " << mainScriptAPI->getTimeRate();
+    //requestedTimeRate = 1.0;
+    mainScriptAPI->wait(1.0);
+    mainScriptAPI->setTimeRate(requestedTimeRate);
+    //qWarning() << requestedTimeRate << ", " << mainScriptAPI->getTimeRate();
+ //   mainScriptAPI->setTimeRate(requestedTimeRate);
+    for (i=0; i<(std::floor(numSweeps/2.0)); i++)
     {
         if (!flagStopSweep)
         {
@@ -1389,15 +1403,15 @@ void Herschels::runSweep()
             }
             float step = secsPerSweep/(100.0*rate);
             qWarning() << "step set at " << step;
-            for (float tim = 0; tim < (secsPerSweep/rate);)
+            for (float tim = 0; tim < ((secsPerSweep/rate)-step);)
             {
                 stelMovementMgr->smoothPan(raMotion, deltaDecDegs, (secsPerSweep/rate), true);
-                //qWarning() << "moving up";
-                mainScriptAPI->wait(step);
+                qWarning() << "moving up";
+                if (cy > endDecRads) {mainScriptAPI->wait(step);}
                 stelMovementMgr->smoothPan(raMotion, deltaDecDegs, (secsPerSweep/rate), false);
                 tim += step;
-                //qWarning() << "in loop, step is " << step;
-                //qWarning() << "time so far is " << tim;
+                qWarning() << "in loop, step is " << step;
+                qWarning() << "time so far is " << tim;
                 if (flagStopSweep) {tim = (secsPerSweep/rate)+100.0;}
             }
             if (flagStopSweep)
@@ -1408,7 +1422,7 @@ void Herschels::runSweep()
             {
                 stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, (secsPerSweep/rate), true);
                 //qWarning() << "moving Down";
-                mainScriptAPI->wait(step);
+                if (cy < startDecRads) {mainScriptAPI->wait(step);}
                 stelMovementMgr->smoothPan(raMotion, -deltaDecDegs, (secsPerSweep/rate), false);
                 tim += step;
                // qWarning() << "in loop, step is " << step;
@@ -1427,7 +1441,7 @@ void Herschels::runSweep()
             i = numSweeps;
         }
     }
-
+    requestedTimeRate = 1.0;
 
 
 

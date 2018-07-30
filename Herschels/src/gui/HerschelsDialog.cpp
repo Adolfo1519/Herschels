@@ -309,8 +309,8 @@ void HerschelsDialog::createDialogContent()
 
     //The time rate spinner
     stelMainScript = new StelMainScriptAPI(this);
-    connect(ui->timeRate,            SIGNAL(valueChanged(double)),  stelMainScript,  SLOT(setTimeRate(double)));
-
+    connect(ui->timeRate,            SIGNAL(valueChanged(double)),  plugin,  SLOT(setRequestedTimeRate(double)));
+    //connect()
     //enable project sweep checkbox
     //connect(ui->projectSweep,       SIGNAL(stateChanged(int)),  this, SLOT(projectSelectedSweep(int)));
 
