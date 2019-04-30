@@ -12,3 +12,7 @@ and produce on the screen the words Sweep 10: December 21, 1785
 
 and slew to the position: 11h43m30.0s	31d15m0.00s
 on December 21 1785
+
+
+Humanities Research Center and Center for Research Computing
+Copyright Rice 2019
