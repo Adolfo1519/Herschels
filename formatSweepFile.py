@@ -1,50 +1,58 @@
-
 import numpy as np
+import re
+import csv
+
+
+
+def dec_format(deg,m):
+	degnum=int(deg)
+	degnum=90-degnum
+	minnum=int(m)
+	if minnum!=0:
+		
+		if degnum>0:
+			degnum-=1
+			minnum=60-minnum
+		else:
+			minnum=-minnum
+		
+	degstr=tp(str(degnum))+"d"+tp(str(minnum))+"m0.00s"
+	return(degstr)
+
+def tp(s):
+	if len(s)==1:
+		s='0'+s
+	return s
+
+def date_format(datestr):
+	m,d,y=datestr.split('-')
+	d=tp(d)
+	m=tp(m)
+	return('-'.join([y,m,d]))
 
 def formatSweepFile(inputSweeps, startInt):
-
-    a = open(inputSweeps, 'r')
-    b = open('outputSweeps_all.ini','w')
-    
-    sweeps = a.readlines()
-    headerLine = sweeps[0]
-    titles = np.array(headerLine.split(","))
-    d = {0:"name", 1:"startRA", 2:"endRA", 5:"startDec", 6:"endDec", 7:"date"}
-#generate dictionary to pick out the titles you want
-#write the lines, using \n to generate a new line whenever necessary
-    print(titles)
-    index = startInt-1
-    for line in sweeps:
-	sweepPars = line.split(",")
-	#columnInd = np.where(titles == '"Run"')
-	for i in d:
-    	    param = sweepPars[i]
-	    slash = "\ "  #.replace(" ", "")
-	    newLine = str(index) + slash.replace(" ", "") + d[i] + "=" + param.replace('"','')
-	    if d[i] == "date":
-		newLine = newLine + "T20:40:00.0"  
-	    if (d[i] == "startRA" or d[i] == "startDec"):
-		#if (newLine != "0.00s" or newLine != "*00.0s"):
-		if (len(newLine) < 21): 
-		    newLine = newLine + "0.00s"
-            if (d[i] == "endRA" or d[i] == "endDec"):
-		#if (newLine != "0.00s" or newLine != "*00.0s"):
-		if (len(newLine) < 18): 
-		    newLine = newLine + "0.00s"
-            newLine += "\n"
-	    print(newLine)
-	    b.write(newLine)
+	a = open(inputSweeps, 'r')
+	b = open('default_sweep.ini','w')
 	
-        #print(sweepPars[columnInd[0]])
-	#print(d[1])
-	index = index + 1
-	#print(len(sweeps[0]))
+	outputstr=''
+	
+	index=startInt
+	with open(inputSweeps) as csvfile:
+		reader=csv.DictReader(csvfile)
+		for row in reader:
+			date=date_format(row['date'])+"T20:40:00.0"
+			startRA=tp(row['startRAh'])+'h'+tp(row['startRAm'])+'m'+'0.00s'
+			endRA=tp(row['endRAh'])+'h'+tp(row['endRAm'])+'m'+'0.00s'
+			startDec=dec_format(row['startDecd'],row['startDecm'])
+			endDec=dec_format(row['endDecd'],row['endDecm'])
+			name='Sweep'+row['name']
+			block_dict={'name':name,'startRA':startRA,'endRA':endRA,'startDec':startDec,'endDec':endDec,'date':date}
+			for k in block_dict:
+				outputstr+='\n'+str(index)+'\\'+k+'='+block_dict[k]
+			index+=1
+	headers='[General]\narrow_scale=1.5\nsweep_count=%d\nsweeps_version=2.0\nuse_decimal_degrees=false\nuse_semi_transparency=false\n\n[sweep]' %(index+1)
+	b.write(headers+outputstr)
+	a.close()
+	b.close()
 
-    b.close()	
-    a.close()
-
-
-
-formatSweepFile('all_sweep_data.csv', 0)
-#0\date=1787-01-24T20:40:00.0
-
+formatSweepFile('sweep_data.csv', 0)
