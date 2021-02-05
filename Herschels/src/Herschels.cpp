@@ -936,8 +936,8 @@ void Herschels::paintSweepBounds()
                 //qWarning() << endPosBot;
                 painter.setBlending(true);
                 painter.setLineSmooth(true);
-                StelUtils::spheToRect((endRARads + startRARads)/2.0,
-                                      (endDecRads + startDecRads)/2.0,
+                StelUtils::spheToRect((abs (endRARads) + abs (startRARads))/2.0,
+                                      (abs (endDecRads) + abs (startDecRads))/2.0,
                                       pos);
                 //QMultiMap<QString, SphericalConvexPolygon*> regions;
                 SphericalConvexPolygon region = SphericalConvexPolygon(startPosTop, endPosTop, endPosBot, startPosBot);
