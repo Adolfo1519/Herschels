@@ -8,13 +8,9 @@ def dec_format(deg,m):
 	degnum=int(deg)
 	degnum=90-degnum
 	minnum=int(m)
-	if minnum!=0:
-		
-		if degnum>0:
-			degnum-=1
-			minnum=60-minnum
-		else:
-			minnum=-minnum
+	if minnum!=0 and degnum>0:
+		degnum-=1
+		minnum=60-minnum
 		
 	degstr=tp(str(degnum))+"d"+tp(str(minnum))+"m0.00s"
 	return(degstr)
