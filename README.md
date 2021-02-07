@@ -23,6 +23,8 @@ This was built for Stellarium 9.0 and has not been tested on newer versions. Sam
    1. Overwrite the Oculars default file prior to installation
       1. `cp default_ocular.ini /home/{{user}}/StelDev/stellarium/plugins/Oculars/`
    1. Take a look at those settings and use the stellarium gui to add them in the GUI after installation
+1. This app requires a new function in the stellarium core to manage telescope motion in the sweeps.
+   1. Overwrite the StelMovementMgr.* files in /home/{{user}}/StelDev/stellarium/src/core/ with the copies in this repo.
 1. Create a build directory and build the app from the altered source code
    1. `export STELROOT=/home/{{user}}/StelDev/stellarium`
    1. `cd /home/{{user}}/StelDev/stellarium`
