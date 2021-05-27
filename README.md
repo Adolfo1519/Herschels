@@ -59,3 +59,16 @@ For more packages, see https://github.com/Stellarium/stellarium/tags?after=v0.19
 1. Delete the Herschel plugin application defaults for Stellarium, for example:
    1. `rm -rf ~/Library/Application\ Support/Stellarium/modules/Herschels`
 1. Run through the installation instructions again, including checking and resetting the appropriate application default settings
+
+Humanities Research Center and Center for Research Computing, Rice University
+
+Canonical Repository link available at:
+https://scholarship.rice.edu/handle/1911/109852
+
+License/Rights:
+CC0 1.0 Universal
+Link to License
+http://creativecommons.org/publicdomain/zero/1.0/
+
+Article on this repository available at:
+https://doi.org/10.1162/leon_a_01832

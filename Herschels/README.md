@@ -14,5 +14,12 @@ and slew to the position: 11h43m30.0s	31d15m0.00s
 on December 21 1785
 
 
-Humanities Research Center and Center for Research Computing
-Copyright Rice 2019
+Humanities Research Center and Center for Research Computing, Rice University
+
+Canonical Repository link available at:
+https://scholarship.rice.edu/handle/1911/109852
+
+License/Rights:
+CC0 1.0 Universal
+Link to License
+http://creativecommons.org/publicdomain/zero/1.0/
