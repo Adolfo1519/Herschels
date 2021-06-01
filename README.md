@@ -4,13 +4,15 @@ is to create a Stellarium plugin which can run the various exploratory sweeps th
 (starting with Caroline and William, though we might add John). 
 
 # Version information
-This was built for Stellarium 9.0 and has not been tested on newer versions. Same goes for this documentation.
+This was built for Stellarium 0.18.x and has not been tested on newer versions. Same goes for this documentation.
+(prior documentation used a deprecated version numbering system. the below documentation uses v0.18.0)
+For more packages, see https://github.com/Stellarium/stellarium/tags?after=v0.19.0
 
 # Download instructions
 
 1. Download Stellarium into /home/{{user}}/StelDev/stellarium
    1. `cd /home/{{user}}/StelDev`
-   1. `svn co https://stellarium.svn.sourceforge.net/svnroot/stellarium/trunk/extmodules`
+   1. `wget https://github.com/Stellarium/stellarium/archive/refs/tags/v0.18.0.tar.gz`
 1. Download this repo
    1. `git clone https://github.com/Adolfo1519/Herschels`
    1. `cd Herschels`
@@ -57,3 +59,16 @@ This was built for Stellarium 9.0 and has not been tested on newer versions. Sam
 1. Delete the Herschel plugin application defaults for Stellarium, for example:
    1. `rm -rf ~/Library/Application\ Support/Stellarium/modules/Herschels`
 1. Run through the installation instructions again, including checking and resetting the appropriate application default settings
+
+Humanities Research Center and Center for Research Computing, Rice University
+
+Canonical Repository link available at:
+https://scholarship.rice.edu/handle/1911/109852
+
+License/Rights:
+CC0 1.0 Universal
+Link to License
+http://creativecommons.org/publicdomain/zero/1.0/
+
+Article on this repository available at:
+https://doi.org/10.1162/leon_a_01832
